@@ -2,11 +2,11 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Header from "./components/Header";
 import ChatWindow from "./components/ChatWindow";
-import ChatInput from "./components/ChatInput";
-import TelemetrySidebar from "./components/TelemetrySidebar";
+//import ChatInput from "./components/ChatInput";
+//import TelemetrySidebar from "./components/TelemetrySidebar";
 import { streamChat } from "./lib/api";
-import { playRadioBleep, playGearShift, setMuted } from "./lib/audio";
-import { getTrack } from "./data/tracks";
+//import { playRadioBleep, playGearShift, setMuted } from "./lib/audio";
+//import { getTrack } from "./data/tracks";
 import type { ChatMessage, ChatMode, Telemetry } from "./types";
 
 const uid = () => Math.random().toString(36).slice(2, 11);
@@ -89,77 +89,71 @@ export default function App() {
       .filter((m) => !m.error)
       .map((m) => ({ role: m.role, content: m.content }));
 
-    try {
-      await streamChat(
-        {
-          mode,
-          trackId,
-          message: text,
-          history,
-          signal: controller.signal,
+    await streamChat(
+      {
+        mode,
+        trackId,
+        message: text,
+        history,
+        signal: controller.signal,
+      },
+      {
+        onToken: (tok) => {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantId ? { ...m, content: m.content + tok } : m
+            )
+          );
+          setTelemetry((t) => ({
+            ...t,
+            ersDeployment: t.ersDeployment + Math.round(tok.length / 4),
+          }));
         },
-        {
-          onToken: (tok) => {
-            setMessages((prev) =>
-              prev.map((m) =>
-                m.id === assistantId ? { ...m, content: m.content + tok } : m
-              )
-            );
-            setTelemetry((t) => ({
-              ...t,
-              ersDeployment: t.ersDeployment + Math.round(tok.length / 4),
-            }));
-          },
-          onDone: (full) => {
-            setIsThinking(false);
-            setStreamingId(null);
-            playRadioBleep();
-            setTelemetry((t) => ({
-              ...t,
-              responseSpeed: full.latency_ms,
-              ersDeployment: full.tokens_used,
-              lap: Math.min(t.lap + 1, track.laps),
-            }));
-            setMessages((prev) =>
-              prev.map((m) =>
-                m.id === assistantId
-                  ? {
-                      ...m,
-                      content: full.reply,
-                      tokensUsed: full.tokens_used,
-                      latencyMs: full.latency_ms,
-                    }
-                  : m
-              )
-            );
-          },
-          onError: (err) => {
-            setIsThinking(false);
-            setStreamingId(null);
-            setError("Telemetry lost. Please check connection and try again.");
-            setMessages((prev) =>
-              prev.map((m) =>
-                m.id === assistantId
-                  ? {
-                      ...m,
-                      content:
-                        "PIT LANE ERROR: Telemetry lost. Please check connection and try again.",
-                      error: true,
-                    }
-                  : m
-              )
-            );
-            console.error(err);
-          },
-        }
-      );
-    } catch (err) {
-      // Catch any unexpected errors outside the stream callbacks
-      setIsThinking(false);
-      setStreamingId(null);
-      setError("Telemetry lost. Please check connection and try again.");
-      console.error(err);
-    }
+        onDone: (full) => {
+          setIsThinking(false);
+          setStreamingId(null);
+          playRadioBleep();
+          setTelemetry((t) => ({
+            ...t,
+            responseSpeed: full.latency_ms,
+            ersDeployment: full.tokens_used,
+            lap: Math.min(t.lap + 1, track.laps),
+          }));
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantId
+                ? {
+                    ...m,
+                    content: full.reply,
+                    tokensUsed: full.tokens_used,
+                    latencyMs: full.latency_ms,
+                  }
+                : m
+            )
+          );
+        },
+        onError: (err) => {
+          setIsThinking(false);
+          setStreamingId(null);
+          setError(
+            "Telemetry lost. Please check connection and try again."
+          );
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantId
+                ? {
+                    ...m,
+                    content:
+                      "PIT LANE ERROR: Telemetry lost. Please check connection and try again.",
+                    error: true,
+                  }
+                : m
+            )
+          );
+          console.error(err);
+        },
+      }
+    );
   }, [input, isThinking, mode, trackId, messages, track.laps]);
 
   const handleModeChange = (m: ChatMode) => {
