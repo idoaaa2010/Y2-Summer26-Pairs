@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { AlertTriangle, X } from "lucide-react";
+import { TriangleAlert as AlertTriangle, X } from "lucide-react";
 import type { ChatMessage } from "../types";
 import ChatBubble from "./ChatBubble";
 import F1Loader from "./F1Loader";
