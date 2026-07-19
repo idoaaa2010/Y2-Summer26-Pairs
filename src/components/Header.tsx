@@ -3,7 +3,7 @@ import { Volume2, VolumeX, ChevronDown, Check } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import type { ChatMode } from "../types";
 import { TRACKS } from "../data/tracks";
-import { playGearShift, playTick } from "../lib/audio";
+//import { playGearShift, playTick } from "../lib/audio";
 
 interface HeaderProps {
   mode: ChatMode;
