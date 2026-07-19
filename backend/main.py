@@ -20,9 +20,12 @@ import time
 import random
 from typing import Literal, List, Dict
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+
+load_dotenv()
 
 try:
     from anthropic import Anthropic
@@ -38,10 +41,10 @@ MODEL = "claude-haiku-4-5-20251001"
 
 client = None
 if Anthropic and ANTHROPIC_API_KEY:
-    kwargs: Dict[str, str] = {"api_key": ANTHROPIC_API_KEY}
-    if ANTHROPIC_BASE_URL:
-        kwargs["base_url"] = ANTHROPIC_BASE_URL
-    client = Anthropic(**kwargs)
+    client = Anthropic(
+        api_key=ANTHROPIC_API_KEY,
+        base_url=ANTHROPIC_BASE_URL or None,
+    )
 
 # --------------------------------------------------------------------------- #
 # Track database
