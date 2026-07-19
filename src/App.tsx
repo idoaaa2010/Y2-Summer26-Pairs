@@ -2,10 +2,10 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Header from "./components/Header";
 import ChatWindow from "./components/ChatWindow";
-import ChatInput from "./components/ChatInput";
-import TelemetrySidebar from "./components/TelemetrySidebar";
+//import ChatInput from "./components/ChatInput";
+//import TelemetrySidebar from "./components/TelemetrySidebar";
 import { streamChat } from "./lib/api";
-import { playRadioBleep, playGearShift, setMuted } from "./lib/audio";
+//import { playRadioBleep, playGearShift, setMuted } from "./lib/audio";
 import { getTrack } from "./data/tracks";
 import type { ChatMessage, ChatMode, Telemetry } from "./types";
 
