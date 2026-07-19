@@ -6,7 +6,7 @@ import ChatWindow from "./components/ChatWindow";
 //import TelemetrySidebar from "./components/TelemetrySidebar";
 import { streamChat } from "./lib/api";
 //import { playRadioBleep, playGearShift, setMuted } from "./lib/audio";
-import { getTrack } from "./data/tracks";
+//import { getTrack } from "./data/tracks";
 import type { ChatMessage, ChatMode, Telemetry } from "./types";
 
 const uid = () => Math.random().toString(36).slice(2, 11);
