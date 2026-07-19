@@ -14,7 +14,7 @@ TRACK_DATABASE = {
     "austria": {"laps": 71, "sectors": 3, "key_corner": "Turn 3"}
 }
 
-def run_chat():
+def run_weather_agent():
     print('You: (type bye to quit)')
     
     # Passing the exact database parameters down into the system instructions
