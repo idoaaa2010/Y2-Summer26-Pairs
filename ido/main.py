@@ -15,18 +15,15 @@ TRACK_DATABASE = {
     "austria": {"laps": 71, "sectors": 3, "key_corner": "Turn 3", "coords": (47.2197, 14.7647)}
 }
 
-# ==========================================
-# CENTRAL PIT WALL MEMORY
-# ==========================================
 SHARED_PIT_WALL = {
-    "current_track": None, # Reset to None so the agents are forced to ask you!
+    "current_track": None, 
     "latest_weather_intel": "Track dry, ambient 24°C, track temp 38°C.",
     "latest_strategy_intel": "P2 behind Verstappen (-0.5s), tyre Mediums (14 laps old)."
 }
 
 def get_live_telemetry(track_id):
     """Generates track-specific race data based on the current circuit."""
-    # Fallback to a generic track if the user types something not in the database
+    
     if not track_id:
         track_id = "unknown circuit"
         
@@ -53,7 +50,6 @@ def fetch_real_weather(track_id):
     if track_info and "coords" in track_info:
         lat, lon = track_info["coords"]
     else:
-        # Default fallback to Silverstone
         lat, lon = (52.0786, -1.0169)
         
     url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,wind_speed_10m,precipitation"
@@ -69,9 +65,7 @@ def fetch_real_weather(track_id):
     except Exception:
         return "LIVE API WEATHER: Offline (Unable to fetch real-time data)."
 
-# ==========================================
-# BACKEND CONSULTATION FUNCTIONS
-# ==========================================
+
 def consult_weather_agent(driver_prompt: str) -> str:
     print("  [BACKEND] 📡 Strategy Agent -> Weather Agent: Fetching environmental telemetry...")
     track = SHARED_PIT_WALL["current_track"] or "the circuit"
@@ -126,14 +120,12 @@ def consult_strategy_agent(driver_prompt: str) -> str:
     return intel
 
 
-# ==========================================
-# AGENT 1: WEATHER & CONDITIONS
-# ==========================================
+
 def run_weather_agent():
     print('\n--- Weather & Conditions Agent Online ---')
     print('You: (type "exit" for main menu, "switch" to change agents)')
     
-    # 1. Ask for track if we don't know it yet
+   
     if not SHARED_PIT_WALL["current_track"]:
         print("\n[METEOROLOGIST]: \"Trackside weather station online. Which circuit are we at?\"\n")
         country_input = input("Engineer (You) >> ").strip().lower()
@@ -158,7 +150,6 @@ def run_weather_agent():
         elif user_input.lower() == 'switch':
             return 'strategy'
         
-        # Update track if mentioned mid-conversation
         for track in TRACK_DATABASE:
             if track in user_input.lower():
                 SHARED_PIT_WALL["current_track"] = track
@@ -204,14 +195,11 @@ def run_weather_agent():
         history.append({'role': 'assistant', 'content': reply})
 
 
-# ==========================================
-# AGENT 2: RACE STRATEGY & TELEMETRY
-# ==========================================
+
 def run_strategy_agent():
     print("\n--- McLaren Pit Wall Radio Link Online ---")
     print('You: (type "exit" for main menu, "switch" to change agents)')
     
-    # 1. Ask for track if we don't know it yet
     if not SHARED_PIT_WALL["current_track"]:
         print("\n[RADIO] Zack Papaya: \"Driver, radio check. Confirm which country we are racing in today so I can sync the telemetry data?\"\n")
         country_input = input("Driver (You) >> ").strip().lower()
@@ -236,12 +224,10 @@ def run_strategy_agent():
         elif user_input.lower() == 'switch':
             return 'weather'
 
-        # Update track if mentioned mid-conversation
         for track in TRACK_DATABASE:
             if track in user_input.lower():
                 SHARED_PIT_WALL["current_track"] = track
 
-        # Get backend weather data and local track telemetry
         weather_context = consult_weather_agent(user_input)
         live_telemetry = get_live_telemetry(SHARED_PIT_WALL["current_track"])
 
@@ -275,9 +261,7 @@ def run_strategy_agent():
         history.append({"role": "assistant", "content": reply})
 
 
-# ==========================================
-# MAIN MENU SYSTEM
-# ==========================================
+
 def main():
     current_state = 'menu'
     
@@ -289,6 +273,7 @@ def main():
             print("1. Agent 1 — Weather & Environmental Conditions")
             print("2. Agent 2 — Race Strategy & Telemetry Analyst")
             print("3. Exit Program")
+            print("YOU CAN USE ONE AGENT AND ASK HIM QUESTIONS ABOUT THE SECONED AGENT ANSWERS!")
             
             choice = input("\nSelect an option (1-3): ").strip()
             
