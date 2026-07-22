@@ -182,7 +182,7 @@ def run_weather_agent():
         
         response = client.messages.create(
             model='claude-3-haiku-20240307',
-            max_tokens=400,
+            max_tokens=3000,
             temperature=0.4,
             system=system_message,
             messages=history
@@ -250,7 +250,7 @@ def run_strategy_agent():
 
         response = client.messages.create(
             model="claude-3-haiku-20240307",
-            max_tokens=200, 
+            max_tokens=3000, 
             temperature=0.3, 
             system=system_message,
             messages=history
